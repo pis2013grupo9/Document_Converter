@@ -1,0 +1,156 @@
+#create_document_modal.modal
+
+//Main Page
+%header.navbar.navbar-inverse.header.navbar-fixed-top{role: "navigation"}
+  .container
+    / Brand and toggle get grouped for better mobile display
+    .navbar-header
+      %button.navbar-toggle{"data-target" => ".navbar-ex1-collapse", "data-toggle" => "collapse", type: "button"}
+        %span.sr-only Toggle navigation
+        %span.icon-bar
+        %span.icon-bar
+        %span.icon-bar
+      %a.navbar-brand{href: "#"} Document Converter
+    / Collect the nav links, forms, and other content for toggling
+    .collapse.navbar-collapse.navbar-ex1-collapse
+      %ul.nav.navbar-nav
+        %li.active
+          %a{href: "#"} Dashboard
+        %li
+          %a{href: "/docs"} Documentation
+      %ul.nav.navbar-nav.navbar-right
+        %li
+          %a="Hello, " + @user.nick.capitalize + "!"
+        %li.dropdown
+          %a.dropdown-toggle{"data-toggle" => "dropdown", href: "#"}
+            My Account
+            %b.caret
+          %ul.dropdown-menu
+            %li.dropdown-header{role: "presentation"} Account Settings
+            %li.dashboard_show_keys
+              %a{href: "#"} My API Keys
+            %li.dashboard_list_webhook
+              %a{href: "#"} My Webhooks 
+            %li.divider{role: "presentation"}
+            %li= link_to "Sign Out", destroy_user_session_path, :method => :delete
+  / /.navbar-collapse
+/.row
+/  .col-sm-12
+/    %h4
+
+/      %button.btn.btn-primary#create_document_button Convert document
+/  -if !@document_error.nil?
+/    .notice#doc_error= @document_error
+  
+/    %hr/
+.row.row-colored
+  .col-sm-2.col-sm-2-fixed
+    %ul.nav.nav-list
+
+      %li.nav-header General
+      %li
+        %button.btn.btn-primary#create_document_button Convert a document
+      %li.nav-header Dashboard
+      %li
+        %a.dashboard_show_keys{href: "#"} My API Keys
+      %li
+        %a.dashboard_list_webhook{href: "#"} My Webhooks
+      %li.divider
+    %div.bottom-storage
+      .progress
+        - used_percentage = (@user.used_storage*100)/@user.total_storage_assigned
+        .progress-bar.progress-bar-danger{"aria-valuemax" => "100", "aria-valuemin" => "0", "aria-valuenow" => used_percentage.to_s, role: "progressbar", style: "width: "+ used_percentage.to_s + "%"}
+          %span.sr-only 40% Complete (success)
+      %span.storage_label= number_to_human_size(@user.used_storage)+" of "+number_to_human_size(@user.total_storage_assigned)+" used"
+  .col-sm-10.col-sm-10-fixed
+
+    -if !@document_error.nil? && !@document_error.blank?
+      .alert.alert-warning.alert-dismissable
+        %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", type: "button"} ×
+        %strong=@document_error
+    -if (!@user.documents.empty?)
+      %table.table.table-hover.table-responsive
+        %tr
+          %th Date
+          %th Hour
+          %th Name
+          %th Source Format
+          %th Converted To
+          %th Status
+        -@user.documents.reverse.each do |d|
+          %tr
+            %td=d.created_at.strftime("%d/%m/%Y")
+            %td=d.created_at.strftime("%H:%M")
+            %td=d.name
+            %td=d.format.name
+            %td=d.converted_document.format.name
+
+            %td{'class'=>"status",'id'=>"#{d.id}"}=d.converted_document.current_status.capitalize
+    -else
+      %br
+      .jumbotron
+        %h2="No documents uploaded yet"
+        %p="Click on convert button to get started"       
+
+:javascript
+$(document).ready(function() {
+
+  $('.dashboard_list_webhook').click(function(){
+      var dom = $("#create_document_modal");
+      dom.empty();
+      $.get('/webhoooks/',
+          function(data) {
+            dom.append(data);
+          });
+      $("#create_document_modal").modal(); 
+    });
+  
+  $('#create_document_button').click(function(){
+      var dom = $("#create_document_modal");
+      dom.empty();
+      $.get('/documents/new',
+          function(data) {
+            dom.append(data);
+          });
+      $("#create_document_modal").modal(); 
+    });
+
+  $('.dashboard_show_keys').click(function(){
+      var dom = $("#create_document_modal");
+      dom.empty();
+      $.get('/documents/show_api_keys',
+          function(data) {
+            dom.append(data);
+          });
+      $("#create_document_modal").modal(); 
+    });
+
+  getStatus();
+
+  function getStatus() {
+    $('.status').each(function() {
+      var id = this.id;
+      $.get('/convert/get_status', { id: id },
+        function(data) {
+          if (data.status == 'Ready') {
+            new_html = '<a href='+data.url+'><button type="button" class="btn btn-success">Download</button></a>';
+            if (new_html != $('#'+id).html())
+              $('#'+id).html(new_html);
+          }
+          else if (data.status == 'Converting') {
+            img = '<img id="loading_img" src="/assets/loading.gif" width=20>';
+            new_html = img+data.status;
+            if (new_html != $('#'+id).html())
+              $('#'+id).html(new_html);
+          }
+          else {
+            new_html = data.status;
+            if (new_html != $('#'+id).html())
+              $('#'+id).html(new_html);
+          }
+        });
+    });
+
+    setTimeout('getStatus()',5000);
+  }
+});

@@ -1,0 +1,165 @@
+Connecting to database specified by database.yml
+  [1m[36m (383.7ms)[0m  [1mCREATE TABLE `schema_migrations` (`version` varchar(255) NOT NULL) ENGINE=InnoDB[0m
+  [1m[35m (310.5ms)[0m  CREATE UNIQUE INDEX `unique_schema_migrations` ON `schema_migrations` (`version`)
+  [1m[36m (66.6ms)[0m  [1mSELECT `schema_migrations`.`version` FROM `schema_migrations` [0m
+Migrating to DeviseCreateUsers (20130925200912)
+  [1m[35m (97.6ms)[0m  CREATE TABLE `users` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `email` varchar(255) DEFAULT '' NOT NULL, `encrypted_password` varchar(255) DEFAULT '' NOT NULL, `reset_password_token` varchar(255), `reset_password_sent_at` datetime, `remember_created_at` datetime, `sign_in_count` int(11) DEFAULT 0 NOT NULL, `current_sign_in_at` datetime, `last_sign_in_at` datetime, `current_sign_in_ip` varchar(255), `last_sign_in_ip` varchar(255), `profile_type` varchar(255), `name` varchar(255), `nick` varchar(255), `surname` varchar(255), `birth_date` datetime, `api_key` varchar(255), `secret_key` varchar(255), `total_storage_assigned` int(11), `documents_time_for_expiration` int(11), `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB
+  [1m[36m (485.8ms)[0m  [1mCREATE UNIQUE INDEX `index_users_on_email` ON `users` (`email`)[0m
+  [1m[35m (336.4ms)[0m  CREATE UNIQUE INDEX `index_users_on_reset_password_token` ON `users` (`reset_password_token`)
+  [1m[36m (136.0ms)[0m  [1mINSERT INTO `schema_migrations` (`version`) VALUES ('20130925200912')[0m
+Migrating to CreateDocuments (20130926164310)
+  [1m[35m (114.9ms)[0m  CREATE TABLE `documents` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `document_number` int(11), `name` varchar(255), `uploading` tinyint(1), `user_id` int(11), `format_id` int(11), `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB
+  [1m[36m (52.3ms)[0m  [1mCREATE INDEX `index_documents_on_user_id_and_document_number` ON `documents` (`user_id`, `document_number`)[0m
+  [1m[35m (4.2ms)[0m  INSERT INTO `schema_migrations` (`version`) VALUES ('20130926164310')
+Migrating to CreateWebhooks (20130926230159)
+  [1m[36m (105.9ms)[0m  [1mCREATE TABLE `webhooks` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `url` varchar(255), `deleted` tinyint(1), `user_id` int(11), `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB[0m
+  [1m[35m (50.3ms)[0m  INSERT INTO `schema_migrations` (`version`) VALUES ('20130926230159')
+Migrating to CreateConvertedDocuments (20130927210851)
+  [1m[36m (5.6ms)[0m  [1mCREATE TABLE `converted_documents` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `name` varchar(255), `conversion_end_date` date, `document_number` int(11), `download_link` varchar(255), `size_in_bytes` int(11), `status` varchar(255), `document_id` int(11), `format_id` int(11), `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB[0m
+  [1m[35m (185.1ms)[0m  CREATE INDEX `index_on_converted_documents_number_format` ON `converted_documents` (`document_number`, `format_id`)
+  [1m[36m (1.8ms)[0m  [1mINSERT INTO `schema_migrations` (`version`) VALUES ('20130927210851')[0m
+Migrating to CreateFormats (20130927212405)
+  [1m[35m (5.1ms)[0m  CREATE TABLE `formats` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `name` varchar(255), `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB
+  [1m[36m (8.0ms)[0m  [1mCREATE TABLE `format_destinies` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `format_id` int(11), `destiniy_id` int(11)) ENGINE=InnoDB[0m
+  [1m[35m (2.2ms)[0m  INSERT INTO `schema_migrations` (`version`) VALUES ('20130927212405')
+Migrating to DeviseCreateAdminUsers (20131007203316)
+  [1m[36m (8.1ms)[0m  [1mCREATE TABLE `admin_users` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `email` varchar(255) DEFAULT '' NOT NULL, `encrypted_password` varchar(255) DEFAULT '' NOT NULL, `reset_password_token` varchar(255), `reset_password_sent_at` datetime, `remember_created_at` datetime, `sign_in_count` int(11) DEFAULT 0 NOT NULL, `current_sign_in_at` datetime, `last_sign_in_at` datetime, `current_sign_in_ip` varchar(255), `last_sign_in_ip` varchar(255), `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB[0m
+  [1m[35m (65.7ms)[0m  CREATE UNIQUE INDEX `index_admin_users_on_email` ON `admin_users` (`email`)
+  [1m[36m (126.0ms)[0m  [1mCREATE UNIQUE INDEX `index_admin_users_on_reset_password_token` ON `admin_users` (`reset_password_token`)[0m
+  [1m[35m (0.3ms)[0m  BEGIN
+  [1m[36mAdminUser Exists (51.1ms)[0m  [1mSELECT 1 AS one FROM `admin_users` WHERE `admin_users`.`email` = BINARY 'admin@example.com' LIMIT 1[0m
+  [1m[35mSQL (21.4ms)[0m  INSERT INTO `admin_users` (`created_at`, `current_sign_in_at`, `current_sign_in_ip`, `email`, `encrypted_password`, `last_sign_in_at`, `last_sign_in_ip`, `remember_created_at`, `reset_password_sent_at`, `reset_password_token`, `sign_in_count`, `updated_at`) VALUES ('2013-10-28 22:56:48', NULL, NULL, 'admin@example.com', '$2a$10$RCkyxBjDg.itrT/JdQX93ewf.VdZItPnWltbaIYlWWPZsQDH0Dc1W', NULL, NULL, NULL, NULL, NULL, 0, '2013-10-28 22:56:48')
+  [1m[36m (4.0ms)[0m  [1mCOMMIT[0m
+  [1m[35m (4.4ms)[0m  INSERT INTO `schema_migrations` (`version`) VALUES ('20131007203316')
+Migrating to CreateAdminNotes (20131007203323)
+  [1m[36m (40.0ms)[0m  [1mCREATE TABLE `admin_notes` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `resource_id` varchar(255) NOT NULL, `resource_type` varchar(255) NOT NULL, `admin_user_id` int(11), `admin_user_type` varchar(255), `body` text, `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB[0m
+  [1m[35m (61.3ms)[0m  CREATE INDEX `index_admin_notes_on_resource_type_and_resource_id` ON `admin_notes` (`resource_type`, `resource_id`)
+  [1m[36m (66.8ms)[0m  [1mCREATE INDEX `index_admin_notes_on_admin_user_type_and_admin_user_id` ON `admin_notes` (`admin_user_type`, `admin_user_id`)[0m
+  [1m[35m (3.4ms)[0m  INSERT INTO `schema_migrations` (`version`) VALUES ('20131007203323')
+Migrating to MoveAdminNotesToComments (20131007203324)
+  [1m[36m (53.0ms)[0m  [1mDROP INDEX `index_admin_notes_on_admin_user_type_and_admin_user_id` ON `admin_notes`[0m
+  [1m[35m (29.4ms)[0m  RENAME TABLE `admin_notes` TO `active_admin_comments`
+  [1m[36m (4.5ms)[0m  [1mSHOW COLUMNS FROM `active_admin_comments` LIKE 'admin_user_type'[0m
+  [1m[35m (74.5ms)[0m  ALTER TABLE `active_admin_comments` CHANGE `admin_user_type` `author_type` varchar(255) DEFAULT NULL
+  [1m[36m (1.1ms)[0m  [1mSHOW COLUMNS FROM `active_admin_comments` LIKE 'admin_user_id'[0m
+  [1m[35m (91.1ms)[0m  ALTER TABLE `active_admin_comments` CHANGE `admin_user_id` `author_id` int(11) DEFAULT NULL
+  [1m[36m (19.7ms)[0m  [1mALTER TABLE `active_admin_comments` ADD `namespace` varchar(255)[0m
+  [1m[35m (127.0ms)[0m  CREATE INDEX `index_active_admin_comments_on_namespace` ON `active_admin_comments` (`namespace`)
+  [1m[36m (55.7ms)[0m  [1mCREATE INDEX `index_active_admin_comments_on_author_type_and_author_id` ON `active_admin_comments` (`author_type`, `author_id`)[0m
+  [1m[35m (105.7ms)[0m  UPDATE active_admin_comments SET namespace='admin'
+  [1m[36m (3.5ms)[0m  [1mINSERT INTO `schema_migrations` (`version`) VALUES ('20131007203324')[0m
+Migrating to AddFileToDocuments (20131019213131)
+  [1m[35m (190.5ms)[0m  ALTER TABLE `documents` ADD `file` varchar(255)
+  [1m[36m (2.4ms)[0m  [1mINSERT INTO `schema_migrations` (`version`) VALUES ('20131019213131')[0m
+Migrating to CreateUsersCounters (20131023205444)
+  [1m[35m (49.0ms)[0m  CREATE TABLE `users_counters` (`id` int(11) DEFAULT NULL auto_increment PRIMARY KEY, `user_id` int(11), `counter` int(11), `created_at` datetime NOT NULL, `updated_at` datetime NOT NULL) ENGINE=InnoDB
+  [1m[36m (48.6ms)[0m  [1mCREATE INDEX `index_users_counters_on_user_id` ON `users_counters` (`user_id`)[0m
+  [1m[35m (3.3ms)[0m  INSERT INTO `schema_migrations` (`version`) VALUES ('20131023205444')
+  [1m[36m (0.5ms)[0m  [1mSELECT `schema_migrations`.`version` FROM `schema_migrations` [0m
+Connecting to database specified by database.yml
+
+
+Started GET "/" for 127.0.0.1 at 2013-10-28 16:02:00 -0700
+Processing by UserController#home as HTML
+  Rendered user/home.html.haml within layouts/application (58.5ms)
+Compiled active_admin.css  (4951ms)  (pid 23591)
+Compiled bootstrap-theme.css  (0ms)  (pid 23591)
+Compiled bootstrap.css  (1ms)  (pid 23591)
+Compiled bootstrap.min.css  (1ms)  (pid 23591)
+Compiled datepicker.css  (0ms)  (pid 23591)
+Compiled user.css  (3ms)  (pid 23591)
+Compiled user/sessions.css  (3ms)  (pid 23591)
+Compiled application.css  (5309ms)  (pid 23591)
+Compiled jquery.js  (90ms)  (pid 23591)
+Compiled jquery_ujs.js  (0ms)  (pid 23591)
+Compiled bootstrap.min.js  (1ms)  (pid 23591)
+Compiled bootstrap-datepicker.js  (0ms)  (pid 23591)
+Compiled jquery.validate.min.js  (1ms)  (pid 23591)
+Compiled application.js  (387ms)  (pid 23591)
+Completed 200 OK in 6259ms (Views: 6258.0ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/application.css?body=1" for 127.0.0.1 at 2013-10-28 16:02:07 -0700
+Served asset /application.css - 200 OK (126ms)
+
+
+Started GET "/assets/bootstrap-theme.css?body=1" for 127.0.0.1 at 2013-10-28 16:02:07 -0700
+Served asset /bootstrap-theme.css - 200 OK (4ms)
+
+
+Started GET "/assets/active_admin.css?body=1" for 127.0.0.1 at 2013-10-28 16:02:07 -0700
+Served asset /active_admin.css - 200 OK (227ms)
+
+
+Started GET "/assets/bootstrap.css?body=1" for 127.0.0.1 at 2013-10-28 16:02:07 -0700
+Served asset /bootstrap.css - 200 OK (7ms)
+
+
+Started GET "/assets/datepicker.css?body=1" for 127.0.0.1 at 2013-10-28 16:02:07 -0700
+Served asset /datepicker.css - 200 OK (23ms)
+
+
+Started GET "/assets/bootstrap.min.css?body=1" for 127.0.0.1 at 2013-10-28 16:02:07 -0700
+Served asset /bootstrap.min.css - 200 OK (12ms)
+
+
+Started GET "/assets/user.css?body=1" for 127.0.0.1 at 2013-10-28 16:02:07 -0700
+Served asset /user.css - 200 OK (11ms)
+
+
+Started GET "/assets/user/sessions.css?body=1" for 127.0.0.1 at 2013-10-28 16:02:08 -0700
+Served asset /user/sessions.css - 200 OK (2ms)
+
+
+Started GET "/assets/jquery.js?body=1" for 127.0.0.1 at 2013-10-28 16:02:08 -0700
+Served asset /jquery.js - 200 OK (34ms)
+
+
+Started GET "/assets/jquery_ujs.js?body=1" for 127.0.0.1 at 2013-10-28 16:02:08 -0700
+Served asset /jquery_ujs.js - 200 OK (6ms)
+
+
+Started GET "/assets/bootstrap.min.js?body=1" for 127.0.0.1 at 2013-10-28 16:02:08 -0700
+Served asset /bootstrap.min.js - 200 OK (4ms)
+
+
+Started GET "/assets/bootstrap-datepicker.js?body=1" for 127.0.0.1 at 2013-10-28 16:02:08 -0700
+Served asset /bootstrap-datepicker.js - 200 OK (15ms)
+
+
+Started GET "/assets/jquery.validate.min.js?body=1" for 127.0.0.1 at 2013-10-28 16:02:08 -0700
+Served asset /jquery.validate.min.js - 200 OK (11ms)
+
+
+Started GET "/assets/application.js?body=1" for 127.0.0.1 at 2013-10-28 16:02:08 -0700
+Served asset /application.js - 200 OK (45ms)
+
+
+Started POST "/users" for 127.0.0.1 at 2013-10-28 16:02:48 -0700
+Processing by User::RegistrationController#create as HTML
+  Parameters: {"user"=>{"email"=>"pepe@pepe.com", "nick"=>"pepepe", "name"=>"pepepepe", "surname"=>"pepepe", "birth_date"=>"10/01/2013", "password"=>"[FILTERED]", "password_confirmation"=>"[FILTERED]"}, "commit"=>""}
+WARNING: Can't verify CSRF token authenticity
+  [1m[36m (0.3ms)[0m  [1mBEGIN[0m
+  [1m[35mUser Exists (4.7ms)[0m  SELECT 1 AS one FROM `users` WHERE `users`.`email` = BINARY 'pepe@pepe.com' LIMIT 1
+  [1m[36mUser Exists (0.5ms)[0m  [1mSELECT 1 AS one FROM `users` WHERE `users`.`nick` = BINARY 'pepepe' LIMIT 1[0m
+  [1m[35mSQL (0.9ms)[0m  INSERT INTO `users` (`api_key`, `birth_date`, `created_at`, `current_sign_in_at`, `current_sign_in_ip`, `documents_time_for_expiration`, `email`, `encrypted_password`, `last_sign_in_at`, `last_sign_in_ip`, `name`, `nick`, `profile_type`, `remember_created_at`, `reset_password_sent_at`, `reset_password_token`, `secret_key`, `sign_in_count`, `surname`, `total_storage_assigned`, `updated_at`) VALUES (NULL, '2013-01-10 00:00:00', '2013-10-28 23:02:48', NULL, NULL, NULL, 'pepe@pepe.com', '$2a$10$o950NEaBacrwii/ChYtcnupZkKdiBDO34.NtyCjhtQ7pm4COYKg5G', NULL, NULL, 'pepepepe', 'pepepe', 'standard', NULL, NULL, NULL, NULL, 0, 'pepepe', NULL, '2013-10-28 23:02:48')
+  [1m[36mUsersCounter Exists (10.6ms)[0m  [1mSELECT 1 AS one FROM `users_counters` WHERE `users_counters`.`user_id` = BINARY 1 LIMIT 1[0m
+  [1m[35mSQL (0.6ms)[0m  INSERT INTO `users_counters` (`counter`, `created_at`, `updated_at`, `user_id`) VALUES (1, '2013-10-28 23:02:49', '2013-10-28 23:02:49', 1)
+  [1m[36m (21.2ms)[0m  [1mCOMMIT[0m
+Redirected to http://localhost:3000/user/new_file
+Completed 302 Found in 1032ms (ActiveRecord: 45.0ms)
+
+
+Started GET "/user/new_file" for 127.0.0.1 at 2013-10-28 16:02:49 -0700
+Processing by UserController#new_file as HTML
+  [1m[35mUser Load (3.9ms)[0m  SELECT `users`.* FROM `users` WHERE `users`.`nick` = 'pepepe' LIMIT 1
+Completed 500 Internal Server Error in 114ms
+
+ActiveModel::MassAssignmentSecurity::Error (Can't mass-assign protected attributes: document_number, uploading):
+  app/controllers/user_controller.rb:9:in `new'
+  app/controllers/user_controller.rb:9:in `new_file'
+
+
+  Rendered /home/federicogodan/.rvm/gems/ruby-1.9.3-p448/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/_trace.erb (4.8ms)
+  Rendered /home/federicogodan/.rvm/gems/ruby-1.9.3-p448/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/_request_and_response.erb (1.9ms)
+  Rendered /home/federicogodan/.rvm/gems/ruby-1.9.3-p448/gems/actionpack-3.2.13/lib/action_dispatch/middleware/templates/rescues/diagnostics.erb within rescues/layout (56.9ms)
